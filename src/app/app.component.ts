@@ -1,8 +1,10 @@
 import { Component } from '@angular/core';
 import { FirebasedbService } from './services/firebasedb.service';
+import { Chart } from 'chart.js';
+import { database } from 'firebase';
 
 interface FbData {
-  Valor: number;
+  Valor: string;
 }
 
 @Component({
@@ -12,18 +14,38 @@ interface FbData {
 })
 export class AppComponent {
   title = 'IoT Aplicacion';
-  fbResponse;
-  fbDataList: FbData[];
+  fbResponse: any;
+  fbDataList: number[];
+  lineChart: any;
 
   constructor(fbservice: FirebasedbService) {
-    this.fbResponse = fbservice
+    fbservice
       .infodata()
       .valueChanges()
       .subscribe((res) => {
-        this.fbDataList = res as FbData[];
-        console.log(res);
-        console.log(this.fbDataList);
+        let temp = res as FbData[];
+        this.fbDataList = temp.map((data) => +data.Valor.replace(/\n/g, ''));
+        this.draw();
       });
-    console.log(this.fbResponse);
+  }
+
+  /**
+   * This function draws the chart when data changes
+   */
+  draw() {
+    this.lineChart = new Chart('fbChart', {
+      type: 'line',
+      data: {
+        labels: this.fbDataList,
+        datasets: [
+          {
+            label: 'Grafica de...',
+            backgroundColor: 'rgb(25, 99, 132)',
+            borderColor: 'rgb(25, 99, 132)',
+            data: this.fbDataList,
+          },
+        ],
+      },
+    });
   }
 }
