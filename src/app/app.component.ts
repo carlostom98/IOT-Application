@@ -22,9 +22,8 @@ export class AppComponent {
     fbservice
       .infodata()
       .valueChanges()
-      .subscribe((res) => {
-        let temp = res as FbData[];
-        this.fbDataList = temp.map((data) => +data.Valor.replace(/\n/g, ''));
+      .subscribe((res: FbData[]) => {
+        this.fbDataList = res.map((data) => +data.Valor.replace(/\n/g, ''));
         this.draw();
       });
   }
